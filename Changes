@@ -1,4 +1,8 @@
 Revision history for Petal::Mail.
 
+0.2 Tue Jan  6 2004
+    - Applied William's patch
+    - Added William's tests 
+
 0.1 Fri Oct 31 2003
     - Initial release

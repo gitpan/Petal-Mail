@@ -5,6 +5,10 @@ Petal::Mail - Format text e-mail using Petal
 
 =head1 SYNOPSIS
 
+  use Petal::Mail;
+  use Petal::Mail;
+  use Petal::Mail;
+  use Petal::Mail;
   my $petal_mail = new Petal::Mail ('email.xml');
   my $text_mail  = $petal_mail->process (%args);
 
@@ -53,8 +57,68 @@ our $Sendmail  = '/usr/sbin/sendmail -t';
 
 # can't touch those
 our $Decode    = new MKDoc::XML::Decode qw/xml xhtml numeric/;
-our $VERSION   = 0.1;
 
+=head1 FUNCTIONS
+
+=head2 process
+
+This function processes a template. It takes a hash or hashref which is used
+to fill out any elements in the template. It returns the processed template as
+a string. See L<Petal> for further details.
+
+=cut
+our $VERSION   = 0.2;
+
+=head1 FUNCTIONS
+
+=head2 process
+
+This function processes a template. It takes a hash or hashref which is used
+to fill out any elements in the template. It returns the processed template as
+a string. See L<Petal> for further details.
+=head2 send
+
+This function processes a template and sends an email message according to the
+headers in the template.  It takes the same parameters as process in addition
+to the email address of the authorized sender. The authorized sender may also
+be set with the environment parameter 'SERVER_ADMIN'. Returns null on success
+or dies on failure.
+
+	$petal_mail->send(AUTH_SENDER => 'lewis@carroll.net', %args);
+
+=cut
+
+=cut
+
+=head1 FUNCTIONS
+
+=head2 process
+
+This function processes a template. It takes a hash or hashref which is used
+to fill out any elements in the template. It returns the processed template as
+a string. See L<Petal> for further details.
+=head2 send
+
+This function processes and sends an email message according to a template.
+It takes the same parameters as process. Returns null(?) on success or dies on
+failure.
+
+=cut
+
+=head1 FUNCTIONS
+
+=head2 process
+
+This function processes a template. It takes a hash or hashref which is used
+to fill out any elements in the template. It returns the processed template as
+a string. See L<Petal> for further details.
+=head2 send
+
+This function processes and sends an email message according to a template.
+It takes the same parameters as process. Returns null(?) on success or dies on
+failure.
+
+=cut
 
 sub process
 {
@@ -64,13 +128,24 @@ sub process
 }
 
 
+=head2 send
+
+This function processes and sends an email message according to a template.
+It takes the same parameters as process. Returns null(?) on success or dies on
+failure.
+
+=cut
 sub send
 {
     my $self = shift;
-    my $mail = $self->process (@_)                       || die '$self->process (\@_) returned undef';
-    $ENV{SERVER_ADMIN}                                   || die '$ENV{SERVER_ADMIN} not set';
-    open (SENDMAIL, "| $Sendmail -f $ENV{SERVER_ADMIN}") || die "error opening sendmail [$Sendmail]: $!";
-    print SENDMAIL $$self                                || die "error writing to sendmail [$Sendmail]: $!";
+    my %args = @_;
+    my $authorized_sender = $args{'AUTH_SENDER'} || $ENV{SERVER_ADMIN} || '';
+    delete $args{'AUTH_SENDER'};
+    $authorized_sender || die 'No authorized sender defined and $ENV{SERVER_ADMIN} not set';
+    
+    my $mail = $self->process (%args)                    || die '$self->process (\@_) returned undef';
+    open (SENDMAIL, "| $Sendmail -f $authorized_sender") || die "error opening sendmail [$Sendmail]: $!";
+    print SENDMAIL $mail                                 || die "error writing to sendmail [$Sendmail]: $!";
     close SENDMAIL;
 }
 
@@ -316,6 +391,11 @@ the following syntax:
       <pre>Preformatted Text</pre>
       <dl>
         <dt>Definition Term</dt>
+=back
+
+Text contained in <p> tags will ignore white space characters (e.g., extra
+spaces, tabs, carriage returns, etc.). See the XHTML specs at W3C for complete
+details-- http://www.w3.org/MarkUp/.
         <dd>Definition List</dd>
       </dl>
     </Body>
@@ -335,11 +415,21 @@ As you can see, L<Petal::Mail>'s template syntax is quite simple:
 
 =back
 
+Text contained in <p> tags will ignore white space characters (e.g., extra
+spaces, tabs, carriage returns, etc.). See the XHTML specs at W3C for complete
+details-- http://www.w3.org/MarkUp/.
+=back
+
 
 As you can see, the content of the <Body> seems to be XHTML. However only a
 subset of XHTML is supported and some extra limitations:
 
 =over 4
+=back
+
+Text contained in <p> tags will ignore white space characters (e.g., extra
+spaces, tabs, carriage returns, etc.). See the XHTML specs at W3C for complete
+details-- http://www.w3.org/MarkUp/.
 
 =item * Paragraphs "<p>"
 
@@ -350,6 +440,11 @@ subset of XHTML is supported and some extra limitations:
 =item * Anything which is outside <p>, <pre>, <dt>, <dd> tags will be ignored / stripped
 out
 
+=back
+
+Text contained in <p> tags will ignore white space characters (e.g., extra
+spaces, tabs, carriage returns, etc.). See the XHTML specs at W3C for complete
+details-- http://www.w3.org/MarkUp/.
 
 =head1 Silly Example
 

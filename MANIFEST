@@ -1,6 +1,8 @@
 Changes
 MANIFEST			This list of files
 Makefile.PL
+fake_sendmail.pl
 lib/Petal/Mail.pm
 t/001_Formatter_XML.t
+t/002_Sendmail.t
 t/data/en.xml
