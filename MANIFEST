@@ -1,0 +1,6 @@
+Changes
+MANIFEST			This list of files
+Makefile.PL
+lib/Petal/Mail.pm
+t/001_Formatter_XML.t
+t/data/en.xml
